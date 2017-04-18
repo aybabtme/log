@@ -10,10 +10,10 @@ import (
 
 var logger = newLog(os.Stderr)
 
-type Log struct{ ctx *log.Context }
+type Log struct{ ctx log.Logger }
 
 func newLog(w io.Writer) *Log {
-	return &Log{ctx: log.NewContext(log.NewJSONLogger(w))}
+	return &Log{ctx: log.NewJSONLogger(w)}
 }
 
 func (l *Log) KV(k string, v interface{}) *Log {
@@ -27,7 +27,8 @@ func (l *Log) KV(k string, v interface{}) *Log {
 	}:
 		v = s.GoString()
 	}
-	return &Log{ctx: l.ctx.With(k, v)}
+
+	return &Log{ctx: log.With(l.ctx, k, v)}
 }
 
 func (l *Log) Err(err error) *Log { return l.KV("err", err) }
